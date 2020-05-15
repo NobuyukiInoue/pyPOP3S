@@ -34,6 +34,7 @@ def main():
 
     pop3s(hostname, portnum, username, passwd)
 
+
 def pop3s(hostname, portnum, username, passwd):
     if portnum == 110:
         pop3 = poplib.POP3(hostname, port=portnum)
@@ -56,7 +57,9 @@ def pop3s(hostname, portnum, username, passwd):
         res_user = pop3.user(username)
     except:
         print("command \"user\" failed.")
+        pop3s_quit(pop3)
         return
+
     print(res_user.decode(encoding="ascii"))
 
     """
@@ -66,7 +69,9 @@ def pop3s(hostname, portnum, username, passwd):
         res_pass = pop3.pass_(passwd)
     except:
         print("command \"pass\" failed.")
+        pop3s_quit(pop3)
         return
+
     print(res_pass.decode(encoding="ascii"))
 
     """
@@ -76,6 +81,7 @@ def pop3s(hostname, portnum, username, passwd):
         res_list = pop3.list()
     except:
         print("command \"list\" failed.")
+        pop3s_quit(pop3)
         return
 
     """
@@ -120,22 +126,36 @@ def pop3s(hostname, portnum, username, passwd):
     """
     quit
     """
+    pop3s_quit(pop3)
+
+    print("quit.")
+
+
+def pop3s_quit(pop3):
     try:
         pop3.quit()
     except:
         print("pop3.quit() error.")
         return
-    print("quit.")
+
+    print("pop3.quit() success.")
+    return
+
 
 def get_date_and_subject(header):
     fp = email.parser.BytesFeedParser()
     [fp.feed(x + b'\r\n') for x in header]
     msg = fp.close()
-    return (msg['Date'], str(email.header.make_header(email.header.decode_header(msg['subject']))))
+    try:
+        return (msg['Date'], str(email.header.make_header(email.header.decode_header(msg['subject']))))
+    except:
+        return (msg['Date'], str(msg['subject']))
+
 
 def print_date_and_subject(title):
     for i in range(len(title)):
         print("{0:4d}: {1:40s} {2}".format(i + 1, title[i][0], title[i][1]))
+
 
 def get_content(content):
     msg = email.message_from_bytes(b'\r\n'.join(content))
