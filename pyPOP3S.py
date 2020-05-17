@@ -76,6 +76,16 @@ def pop3s(hostname, portnum, username, passwd):
     print(res_pass.decode(encoding="ascii"))
 
     """
+    get stat.
+    """
+    try:
+        res_stat = pop3.stat()
+    except:
+        print("command \"stat\" failed.")
+        pop3s_quit(pop3)
+        return
+
+    """
     get list.
     """
     try:
@@ -88,13 +98,6 @@ def pop3s(hostname, portnum, username, passwd):
     """
     get all mail subject.
     """
-    try:
-        res_stat = pop3.stat()
-    except:
-        print("command \"stat\" failed.")
-        pop3s_quit(pop3)
-        return
-
     headers = [pop3.top(i + 1, 0) for i in range(len(res_list[1]))]
     title = [get_date_and_subject(headers[i][1]) for i in range(len(res_list[1]))]
 

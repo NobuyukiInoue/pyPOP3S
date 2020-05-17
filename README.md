@@ -5,14 +5,14 @@ POP3 and POP3 over SSL/TLS client by python3.
 ## Usage
 
 ```
-$ python pyPOP3S.py [pop3 server] [110 | 995] <username> <password>
+$ python pyPOP3S.py <pop3 server> <110 | 995> [username] [password]
 ```
 
 ## Execution example
 ```
-$ python pyPOP3S.py [pop3 server] [110 | 995]
-username:       <--- input username.
-Password:       <--- input password. 
+$ python pyPOP3S.py pop.example.com 995
+username: username      <--- input username.
+Password: ********      <--- input password. 
 connected to xxxxxxx:xxx
 +OK please send PASS command
 +OK your maildrop has xxx message(s)
