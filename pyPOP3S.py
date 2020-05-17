@@ -162,9 +162,9 @@ def get_date_and_subject(header):
         res_from = msg['From']
 
     try:
-        res_subject = str(email.header.make_header(email.header.decode_header(msg['subject'])))
+        res_subject = str(email.header.make_header(email.header.decode_header(msg['Subject'])))
     except:
-        res_subject = msg['subject']
+        res_subject = msg['Subject']
 
     return (msg['Date'], res_from, res_subject)
 
