@@ -7,6 +7,7 @@ import ssl
 import poplib
 import sys
 
+
 def main():
     argv = sys.argv
     argc = len(argv)
@@ -87,16 +88,24 @@ def pop3s(hostname, portnum, username, passwd):
     """
     get all mail subject.
     """
+    try:
+        res_stat = pop3.stat()
+    except:
+        print("command \"stat\" failed.")
+        pop3s_quit(pop3)
+        return
+
     headers = [pop3.top(i + 1, 0) for i in range(len(res_list[1]))]
     title = [get_date_and_subject(headers[i][1]) for i in range(len(res_list[1]))]
-    
+
+    print_stat(res_stat)
     print_date_and_subject(title)
 
     """
     print select menu
     """
     while True:
-        print("select[{0:d}-{1:d}](0...list, -1 or char ...exit) : ".format(1, len(headers)), end="")
+        print("select[{0:d}-{1:d}](0...list, -1 ...exit) : ".format(1, len(headers)), end="")
         workStr = input()
 
         if workStr == "":
@@ -106,7 +115,7 @@ def pop3s(hostname, portnum, username, passwd):
         try:
             n = int(workStr)
         except:
-            break
+            continue
 
         if n < 0:
             break
@@ -114,7 +123,8 @@ def pop3s(hostname, portnum, username, passwd):
             # do nothing to stay connect.
             pop3.noop()
 
-            # print subject list.
+            # print res_stat and subject list.
+            print_stat(res_stat)
             print_date_and_subject(title)
         elif 1 <= n and n <= len(headers):
             # get message.
@@ -138,23 +148,34 @@ def pop3s_quit(pop3):
         print("pop3.quit() error.")
         return
 
-    print("pop3.quit() success.")
+    print("pop3.quit() succeeded.")
     return
-
 
 def get_date_and_subject(header):
     fp = email.parser.BytesFeedParser()
     [fp.feed(x + b'\r\n') for x in header]
     msg = fp.close()
+
     try:
-        return (msg['Date'], str(email.header.make_header(email.header.decode_header(msg['subject']))))
+        res_from = str(email.header.make_header(email.header.decode_header(msg['From'])))
     except:
-        return (msg['Date'], str(msg['subject']))
+        res_from = msg['From']
+
+    try:
+        res_subject = str(email.header.make_header(email.header.decode_header(msg['subject'])))
+    except:
+        res_subject = msg['subject']
+
+    return (msg['Date'], res_from, res_subject)
 
 
 def print_date_and_subject(title):
     for i in range(len(title)):
-        print("{0:4d}: {1:40s} {2}".format(i + 1, title[i][0], title[i][1]))
+        print("{0:4d}: {1:40s} {2}\n      {3}".format(i + 1, title[i][0], title[i][1], title[i][2]))
+
+
+def print_stat(res_stat):
+    print("{0} mails, {1} bytes.".format(res_stat[0], res_stat[1]))
 
 
 def get_content(content):
@@ -173,6 +194,7 @@ def get_content(content):
     except:
         # if it cannot be decoded.
         return msg._payload[-1]._payload
+
 
 if __name__ == "__main__":
     main()
