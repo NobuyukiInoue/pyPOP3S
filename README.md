@@ -2,6 +2,12 @@
 
 POP3 and POP3 over SSL/TLS client by python3.
 
+## Relation
+
+* pyPOP3S on AWS Lambda<BR>
+[http://www.asahi-net.or.jp/~gx3n-inue/apps/pypop3s/index.html](http://www.asahi-net.or.jp/~gx3n-inue/apps/pypop3s/index.html)
+
+
 ## Usage
 
 ```
