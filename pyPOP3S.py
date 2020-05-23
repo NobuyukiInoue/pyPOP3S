@@ -99,10 +99,11 @@ def pop3s(hostname, portnum, username, passwd):
     get all mail subject.
     """
     headers = [pop3.top(i + 1, 0) for i in range(len(res_list[1]))]
+    sizes = [res_list[1][i].decode("UTF-8").split(" ") for i in range(len(res_list[1]))]
     title = [get_date_and_subject(headers[i][1]) for i in range(len(res_list[1]))]
 
     print_stat(res_stat)
-    print_date_and_subject(title)
+    print_date_and_subject(title, sizes)
 
     """
     print select menu
@@ -128,7 +129,7 @@ def pop3s(hostname, portnum, username, passwd):
 
             # print res_stat and subject list.
             print_stat(res_stat)
-            print_date_and_subject(title)
+            print_date_and_subject(title, sizes)
         elif 1 <= n and n <= len(headers):
             # get message.
             content = pop3.retr(n)
@@ -172,9 +173,12 @@ def get_date_and_subject(header):
     return (msg['Date'], res_from, res_subject)
 
 
-def print_date_and_subject(title):
+def print_date_and_subject(title, sizes):
     for i in range(len(title)):
-        print("{0:4d}: {1:40s} {2}\n      {3}".format(i + 1, title[i][0], title[i][1], title[i][2]))
+        if i + 1 == int(sizes[i][0]):
+            print("{0:4d}: {1:40s} {2:>10s} bytes {3}\n      {4}".format(i + 1, title[i][0], sizes[i][1], title[i][1], title[i][2]))
+        else:
+            print("sizes[{0:d}] index number is not exist.".format(i))
 
 
 def print_stat(res_stat):
